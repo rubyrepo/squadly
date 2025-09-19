@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCzU_RuTpDRS6D1A4IJ7PTdYZq6OO5ZJVY",
-  authDomain: "freshrack-7dda3.firebaseapp.com",
-  projectId: "freshrack-7dda3",
-  storageBucket: "freshrack-7dda3.firebasestorage.app",
-  messagingSenderId: "148156476207",
-  appId: "1:148156476207:web:43b0263f0fc47767ee4fda"
+  apiKey: "AIzaSyBW6iXc9J3yHuEN7X-V_c8hE5fjpuee7kA",
+  authDomain: "squadly-ee4b6.firebaseapp.com",
+  projectId: "squadly-ee4b6",
+  storageBucket: "squadly-ee4b6.firebasestorage.app",
+  messagingSenderId: "380963641693",
+  appId: "1:380963641693:web:7d41c1aade91cb5752f0b4"
 };
 
 const app = initializeApp(firebaseConfig);
