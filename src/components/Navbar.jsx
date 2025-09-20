@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { Menu, X } from "lucide-react";
@@ -6,42 +6,77 @@ import { Menu, X } from "lucide-react";
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const UserProfile = () => (
     <div className="flex items-center gap-4">
-      <div className="relative group">
-        {user?.photoURL ? (
-          <img
-            src={user.photoURL}
-            alt={user.username}
-            className="w-9 h-9 rounded-full object-cover"
-          />
-        ) : (
-          <div className="flex items-center justify-center w-9 h-9 rounded-full bg-green-600 text-white font-semibold">
-            {user?.username?.[0]?.toUpperCase()}
+      <div className="relative" ref={dropdownRef}>
+        <button
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className="focus:outline-none"
+        >
+          {user?.photoURL && !imgError ? (
+            <img
+              src={user.photoURL}
+              alt={user.username}
+              className="w-9 h-9 rounded-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="flex items-center justify-center w-9 h-9 rounded-full bg-red-600 text-white font-semibold">
+              {user?.username?.[0]?.toUpperCase() || "U"}
+            </div>
+          )}
+        </button>
+
+        {/* Dropdown Menu */}
+        {isDropdownOpen && (
+          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+            <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+              {user?.username || user?.email}
+            </div>
+            <Link
+              to="/dashboard"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              onClick={() => setIsDropdownOpen(false)}
+            >
+              Dashboard
+            </Link>
+            <button
+              onClick={() => {
+                logout();
+                setIsDropdownOpen(false);
+              }}
+              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+            >
+              Logout
+            </button>
           </div>
         )}
-
-        <div className="absolute hidden group-hover:block -bottom-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-sm rounded whitespace-nowrap">
-          {user?.username}
-        </div>
       </div>
-      <button
-        onClick={logout}
-        className="text-gray-600 hover:text-red-500 transition-colors"
-      >
-        Logout
-      </button>
     </div>
   );
 
   const navLinks = [
     { to: "/", label: "Home" },
-    { to: "/fridge", label: "Fridge" },
+    { to: "/courts", label: "Courts" },
     ...(user
       ? [
-          { to: "/add-food", label: "Add Food" },
-          { to: "/my-items", label: "My Items" },
+          { to: "/club", label: "Club" },
+          { to: "/activities", label: "Activities" },
         ]
       : []),
   ];
@@ -50,9 +85,13 @@ const Navbar = () => {
     <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          
+          {/* Logo */}
           <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-            <img src="/src/assets/icons8-leaf-48.png" alt="logo" className="h-8 w-8" />
+            <img
+              src="/icons8-track-and-field-96.png"
+              alt="logo"
+              className="h-8 w-8"
+            />
             <span className="text-gray-800">Squadly</span>
           </Link>
 
@@ -62,25 +101,28 @@ const Navbar = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className="text-gray-600 hover:text-green-600 transition-colors"
+                className="text-gray-600 hover:text-red-600 transition-colors"
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          {/* Right side */}
+          {/* Right Side */}
           <div className="hidden md:flex items-center gap-4">
             {user ? (
               <UserProfile />
             ) : (
               <>
-                <Link to="/login" className="text-gray-600 hover:text-green-600 transition-colors">
+                <Link
+                  to="/login"
+                  className="text-gray-600 hover:text-red-600 transition-colors"
+                >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
                 >
                   Register
                 </Link>
@@ -106,7 +148,7 @@ const Navbar = () => {
               key={link.to}
               to={link.to}
               onClick={() => setIsOpen(false)}
-              className="block text-gray-600 hover:text-green-600 transition-colors"
+              className="block text-gray-600 hover:text-red-600 transition-colors"
             >
               {link.label}
             </Link>
@@ -121,14 +163,14 @@ const Navbar = () => {
               <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="text-gray-600 hover:text-green-600 transition-colors"
+                className="text-gray-600 hover:text-red-600 transition-colors"
               >
                 Login
               </Link>
               <Link
                 to="/register"
                 onClick={() => setIsOpen(false)}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
               >
                 Register
               </Link>

@@ -6,53 +6,53 @@ import { NavLink } from 'react-router';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-const accent = '#00a63e';
+const accent = '#ff0000'; // Red accent for your theme
 
 const slides = [
   {
-    img: 'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg',
-    alt: 'Fresh Fruits & Vegetables',
-    title: 'Keep Your Food Fresh Longer',
-    description: 'Track your groceries and get notified before they expire, reducing waste and saving money.',
-    listTitle: 'Benefits of tracking:',
+    img: 'https://images.pexels.com/photos/2294361/pexels-photo-2294361.jpeg',
+    alt: 'Soccer Court',
+    title: 'Book Your Court Easily',
+    description: 'Reserve courts online for soccer, tennis, basketball, or other sports quickly and securely.',
+    listTitle: 'Why choose us:',
     items: [
-      'Receive alerts for upcoming expiry dates',
-      'Organize your fridge and pantry efficiently',
-      'Reduce food waste and save money',
-      'Know exactly what you have at a glance',
+      'Instant court booking',
+      'View available slots in real-time',
+      'Manage your reservations effortlessly',
+      'Play anytime without waiting',
     ],
-    buttonText: 'Start Tracking',
-    link: '/add-food',
+    buttonText: 'Book Now',
+    link: '/courts',
   },
   {
-    img: 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg',
-    alt: 'Organized Kitchen',
-    title: 'Organize Your Kitchen Like a Pro',
-    description: 'Create a smart inventory of your food items, sorted by category and expiry date.',
-    listTitle: 'What you can do:',
+    img: 'https://images.pexels.com/photos/1166862/pexels-photo-1166862.jpeg',
+    alt: 'Sports Club Activities',
+    title: 'Join Exciting Sports Activities',
+    description: 'Participate in tournaments, classes, and fun group activities organized by our club.',
+    listTitle: 'Activities include:',
     items: [
-      'Add and manage all your food items',
-      'Track quantities and categories easily',
-      'See items that are about to expire',
-      'Maintain a clean and organized kitchen',
+      'Football & Basketball tournaments',
+      'Yoga and fitness classes',
+      'Swimming sessions',
+      'Team-building sports events',
     ],
-    buttonText: 'My Items',
-    link: '/my-items',
+    buttonText: 'Explore Activities',
+    link: '/activities',
   },
   {
-    img: 'https://images.pexels.com/photos/1603901/pexels-photo-1603901.jpeg',
-    alt: 'Reduce Waste',
-    title: 'Save Money & Reduce Waste',
-    description: 'Minimize food wastage and make smarter shopping decisions with timely alerts.',
-    listTitle: 'How it helps:',
+    img: 'https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg',
+    alt: 'Membership Benefits',
+    title: 'Become a Club Member',
+    description: 'Gain access to exclusive facilities, priority bookings, and member-only events.',
+    listTitle: 'Member benefits:',
     items: [
-      'Never forget about expiring items',
-      'Plan your meals efficiently',
-      'Track your pantry in one place',
-      'Reduce unnecessary grocery expenses',
+      'Discounted court bookings',
+      'Early access to events',
+      'Personalized training sessions',
+      'Community networking opportunities',
     ],
-    buttonText: 'Learn More',
-    link: '/about',
+    buttonText: 'Join Now',
+    link: '/membership',
   },
 ];
 
@@ -70,7 +70,7 @@ const Slider = () => {
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
-            <div className="flex flex-col md:flex-row w-full h-[400px] md:h-[450px] bg-white rounded-lg shadow-lg border border-green-600 overflow-hidden mx-auto">
+            <div className="flex flex-col md:flex-row w-full h-[400px] md:h-[450px] bg-white rounded-lg shadow-lg border border-red-600 overflow-hidden mx-auto">
               {/* Image Section */}
               <div className="w-full md:w-1/2 h-[200px] md:h-full flex-shrink-0">
                 <img
@@ -99,7 +99,7 @@ const Slider = () => {
                   >
                     {slide.buttonText}
                   </button>
-                </NavLink>  
+                </NavLink>
               </div>
             </div>
           </SwiperSlide>

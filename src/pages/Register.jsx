@@ -117,7 +117,7 @@ const Register = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             />
           </div>
 
@@ -131,7 +131,7 @@ const Register = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             />
           </div>
 
@@ -144,7 +144,7 @@ const Register = () => {
               placeholder="Photo URL"
               value={formData.photoURL}
               onChange={handleChange}
-              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             />
           </div>
 
@@ -158,7 +158,7 @@ const Register = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className={`px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 ${
+              className={`px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500 ${
                 passwordError ? "border-red-500" : "border-gray-300"
               }`}
             />
@@ -169,7 +169,7 @@ const Register = () => {
           <button
             type="submit"
             disabled={loading || !!passwordError}
-            className="w-full px-4 py-2 bg-green-600 text-white font-medium rounded hover:bg-green-700 transition"
+            className="w-full px-4 py-2 bg-red-600 text-white font-medium rounded hover:bg-red-700 transition"
           >
             {loading ? (
               <div className="animate-spin border-4 border-white border-t-transparent h-5 w-5 mx-auto rounded-full"></div>
@@ -196,7 +196,7 @@ const Register = () => {
 
         <p className="text-center mt-4 text-gray-600">
           Already have an account?{" "}
-          <Link to="/login" className="text-green-600 font-medium hover:underline">
+          <Link to="/login" className="text-red-600 font-medium hover:underline">
             Login here
           </Link>
         </p>
