@@ -25,7 +25,7 @@ const slides = [
     link: '/courts',
   },
   {
-    img: 'https://images.pexels.com/photos/1166862/pexels-photo-1166862.jpeg',
+    img: 'https://images.pexels.com/photos/1103829/pexels-photo-1103829.jpeg',
     alt: 'Sports Club Activities',
     title: 'Join Exciting Sports Activities',
     description: 'Participate in tournaments, classes, and fun group activities organized by our club.',
