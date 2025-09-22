@@ -8,6 +8,7 @@ import Register from "../pages/Register";
 import PrivateRoute from "../components/PrivateRoute";
 import UserDashboard from "../layouts/UserDashboard";
 import Profile from "../pages/Profile";
+import Courts from "../pages/Courts";
 
 
 export const router = createBrowserRouter([
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
             element: <Profile />
           }
         ]
+      },
+      {
+        path: "courts",
+        element: <Courts />
       }
     ]
   }
