@@ -10,7 +10,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, checkAdminCredentials } = useAuth();
   const googleProvider = new GoogleAuthProvider();
 
   const handleEmailLogin = async (e) => {
@@ -21,11 +21,19 @@ const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      const isAdmin = checkAdminCredentials(email, password);
       login({
         username: user.email.split("@")[0],
         email: user.email,
         uid: user.uid,
+        isAdmin
       });
+      
+      if (isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
 
       Swal.fire({
         icon: "success",

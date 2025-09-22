@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -55,6 +55,15 @@ const Navbar = () => {
             >
               Dashboard
             </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                onClick={() => setIsDropdownOpen(false)}
+              >
+                Admin Dashboard
+              </Link>
+            )}
             <button
               onClick={() => {
                 logout();

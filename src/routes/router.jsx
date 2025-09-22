@@ -6,7 +6,9 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import PrivateRoute from "../components/PrivateRoute";
+import AdminRoute from "../components/AdminRoute";
 import UserDashboard from "../layouts/UserDashboard";
+import AdminDashboard from "../layouts/AdminDashboard";
 import Profile from "../pages/Profile";
 import Courts from "../pages/Courts";
 
@@ -42,6 +44,14 @@ export const router = createBrowserRouter([
             element: <Profile />
           }
         ]
+      },
+      {
+        path: "admin",
+        element: (
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        ),
       },
       {
         path: "courts",
