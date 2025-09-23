@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router"; // Fixed import
 import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../config/firebase.config";
 import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
+import { userService } from '../services/userService';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -35,36 +36,59 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (passwordError) return;
-
     setLoading(true);
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      // First create Firebase auth user
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+
+      // Update Firebase profile
       await updateProfile(userCredential.user, {
         displayName: formData.name,
-        photoURL: formData.photoURL || null,
+        photoURL: formData.photoURL || null
       });
 
+      // Prepare user data for MongoDB
+      const userData = {
+        uid: userCredential.user.uid,
+        email: formData.email,
+        name: formData.name,
+        photoURL: formData.photoURL || null,
+        role: 'user',
+        createdAt: new Date().toISOString(),
+        provider: 'email'
+      };
+
+      // Save user data to MongoDB
+      await userService.register(userData);
+
+      // Login the user
       login({
         username: formData.name,
         email: formData.email,
         uid: userCredential.user.uid,
-        photoURL: formData.photoURL,
+        photoURL: formData.photoURL
       });
 
-      Swal.fire({
-        icon: "success",
-        title: "Registration Successful!",
+      await Swal.fire({
+        icon: 'success',
+        title: 'Registration Successful!',
         showConfirmButton: false,
-        timer: 1500,
+        timer: 1500
       });
 
-      navigate("/");
+      navigate('/');
+
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: error.message,
+      console.error('Registration error:', error);
+      await Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed',
+        text: error.message || 'Failed to create account'
       });
     } finally {
       setLoading(false);
@@ -72,11 +96,28 @@ const Register = () => {
   };
 
   const handleGoogleRegister = async () => {
+    setLoading(true);
     const googleProvider = new GoogleAuthProvider();
+
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
+      // Prepare user data for MongoDB
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName,
+        photoURL: user.photoURL,
+        role: 'user',
+        createdAt: new Date().toISOString(),
+        provider: 'google'
+      };
+
+      // Save Google user data to MongoDB
+      const dbResponse = await userService.register(userData);
+
+      // Login the user regardless of whether they're new or existing
       login({
         username: user.displayName || user.email.split("@")[0],
         email: user.email,
@@ -84,20 +125,24 @@ const Register = () => {
         photoURL: user.photoURL,
       });
 
-      Swal.fire({
+      await Swal.fire({
         icon: "success",
-        title: "Registration Successful!",
+        title: "Login Successful!",
         showConfirmButton: false,
         timer: 1500,
       });
 
       navigate("/");
+
     } catch (error) {
-      Swal.fire({
+      console.error('Google registration error:', error);
+      await Swal.fire({
         icon: "error",
-        title: "Oops...",
-        text: "Failed to register with Google!",
+        title: "Registration Failed",
+        text: error.message || "Failed to register with Google!"
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,7 +152,7 @@ const Register = () => {
         <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          
+
           <div className="flex flex-col">
             <label className="mb-1 font-medium text-gray-700">Name</label>
             <input
@@ -121,7 +166,7 @@ const Register = () => {
             />
           </div>
 
-          
+
           <div className="flex flex-col">
             <label className="mb-1 font-medium text-gray-700">Email</label>
             <input
@@ -135,7 +180,7 @@ const Register = () => {
             />
           </div>
 
-          
+
           <div className="flex flex-col">
             <label className="mb-1 font-medium text-gray-700">Photo URL (optional)</label>
             <input
@@ -148,7 +193,7 @@ const Register = () => {
             />
           </div>
 
-          
+
           <div className="flex flex-col">
             <label className="mb-1 font-medium text-gray-700">Password</label>
             <input
@@ -158,14 +203,13 @@ const Register = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className={`px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                passwordError ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500 ${passwordError ? "border-red-500" : "border-gray-300"
+                }`}
             />
             {passwordError && <span className="text-red-500 text-sm mt-1">{passwordError}</span>}
           </div>
 
-          
+
           <button
             type="submit"
             disabled={loading || !!passwordError}
@@ -179,14 +223,14 @@ const Register = () => {
           </button>
         </form>
 
-        
+
         <div className="my-4 flex items-center">
           <hr className="flex-1 border-gray-300" />
           <span className="mx-2 text-gray-400">OR</span>
           <hr className="flex-1 border-gray-300" />
         </div>
 
-        
+
         <button
           onClick={handleGoogleRegister}
           className="w-full px-4 py-2 border border-gray-300 rounded flex items-center justify-center gap-2 hover:bg-gray-100 transition"
@@ -203,6 +247,6 @@ const Register = () => {
       </div>
     </div>
   );
-};  
+};
 
 export default Register;
