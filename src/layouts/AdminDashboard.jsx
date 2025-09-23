@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement } from '../services/announcementService';
+import { userService } from '../services/userService';
 import AnnouncementForm from '../components/AnnouncementForm';
+import CouponForm from '../components/CouponForm';
 import Swal from 'sweetalert2';
 
 const AdminDashboard = () => {
@@ -9,9 +11,13 @@ const AdminDashboard = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [coupons, setCoupons] = useState([]);
+  const [showCouponForm, setShowCouponForm] = useState(false);
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
 
   useEffect(() => {
     fetchAnnouncements();
+    fetchCoupons();
   }, []);
 
   const fetchAnnouncements = async () => {
@@ -20,6 +26,15 @@ const AdminDashboard = () => {
       setAnnouncements(data);
     } catch (error) {
       Swal.fire('Error', 'Failed to fetch announcements', 'error');
+    }
+  };
+
+  const fetchCoupons = async () => {
+    try {
+      const data = await userService.getCoupons();
+      setCoupons(data);
+    } catch (error) {
+      Swal.fire('Error', 'Failed to fetch coupons', 'error');
     }
   };
 
@@ -36,6 +51,23 @@ const AdminDashboard = () => {
       Swal.fire('Success', `Announcement ${selectedAnnouncement ? 'updated' : 'created'} successfully`, 'success');
     } catch (error) {
       Swal.fire('Error', 'Failed to save announcement', 'error');
+    }
+  };
+
+  const handleCouponSubmit = async (formData) => {
+    try {
+      if (selectedCoupon) {
+        await userService.updateCoupon(selectedCoupon._id, formData);
+        Swal.fire('Success', 'Coupon updated successfully', 'success');
+      } else {
+        await userService.createCoupon(formData);
+        Swal.fire('Success', 'Coupon created successfully', 'success');
+      }
+      fetchCoupons();
+      setShowCouponForm(false);
+      setSelectedCoupon(null);
+    } catch (error) {
+      Swal.fire('Error', 'Failed to save coupon', 'error');
     }
   };
 
@@ -58,6 +90,28 @@ const AdminDashboard = () => {
       });
     } catch (error) {
       Swal.fire('Error', 'Failed to delete announcement', 'error');
+    }
+  };
+
+  const handleDeleteCoupon = async (id) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+      });
+
+      if (result.isConfirmed) {
+        await userService.deleteCoupon(id);
+        await fetchCoupons();
+        Swal.fire('Deleted!', 'Coupon has been deleted.', 'success');
+      }
+    } catch (error) {
+      Swal.fire('Error', 'Failed to delete coupon', 'error');
     }
   };
 
@@ -149,6 +203,62 @@ const AdminDashboard = () => {
                     </button>
                     <button
                       onClick={() => handleDelete(announcement._id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Coupons Section */}
+        <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Coupons</h2>
+            <button
+              onClick={() => setShowCouponForm(true)}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+            >
+              New Coupon
+            </button>
+          </div>
+
+          {showCouponForm && (
+            <div className="mb-6">
+              <CouponForm
+                coupon={selectedCoupon}
+                onSubmit={handleCouponSubmit}
+                onCancel={() => {
+                  setShowCouponForm(false);
+                  setSelectedCoupon(null);
+                }}
+              />
+            </div>
+          )}
+
+          <div className="grid gap-4">
+            {coupons.map((coupon) => (
+              <div key={coupon._id} className="border p-4 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-semibold">{coupon.code}</h3>
+                    <p className="text-gray-600">Discount: {coupon.discount}%</p>
+                  </div>
+                  <div className="space-x-2">
+                    <button
+                      onClick={() => {
+                        setSelectedCoupon(coupon);
+                        setShowCouponForm(true);
+                      }}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteCoupon(coupon._id)}
                       className="text-red-600 hover:text-red-800"
                     >
                       Delete
