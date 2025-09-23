@@ -1,73 +1,35 @@
-const API_URL = 'http://localhost:5000/api/announcements';
+const BASE_URL = 'http://localhost:5000';
 
-export const announcementService = {
-    // Get all announcements
-    getAllAnnouncements: async () => {
-        try {
-            const response = await fetch(API_URL);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching announcements:', error);
-            throw error;
-        }
-    },
+export const getAnnouncements = async () => {
+  const response = await fetch(`${BASE_URL}/announcements`);
+  if (!response.ok) throw new Error('Failed to fetch announcements');
+  return response.json();
+};
 
-    // Create a new announcement
-    createAnnouncement: async (announcementData) => {
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(announcementData),
-            });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error creating announcement:', error);
-            throw error;
-        }
-    },
+export const createAnnouncement = async (announcement) => {
+  const response = await fetch(`${BASE_URL}/announcements`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(announcement)
+  });
+  if (!response.ok) throw new Error('Failed to create announcement');
+  return response.json();
+};
 
-    // Update an announcement
-    updateAnnouncement: async (id, announcementData) => {
-        try {
-            const response = await fetch(`${API_URL}/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(announcementData),
-            });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error updating announcement:', error);
-            throw error;
-        }
-    },
+export const updateAnnouncement = async (id, announcement) => {
+  const response = await fetch(`${BASE_URL}/announcements/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(announcement)
+  });
+  if (!response.ok) throw new Error('Failed to update announcement');
+  return response.json();
+};
 
-    // Delete an announcement
-    deleteAnnouncement: async (id) => {
-        try {
-            const response = await fetch(`${API_URL}/${id}`, {
-                method: 'DELETE',
-            });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error deleting announcement:', error);
-            throw error;
-        }
-    }
+export const deleteAnnouncement = async (id) => {
+  const response = await fetch(`${BASE_URL}/announcements/${id}`, {
+    method: 'DELETE'
+  });
+  if (!response.ok) throw new Error('Failed to delete announcement');
+  return response.json();
 };
