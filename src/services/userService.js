@@ -83,8 +83,8 @@ export const userService = {
   getCourts: async () => {
     try {
       const response = await fetch(`${BASE_URL}/courts`);
-      const data = await response.json();
-      return data;
+      if (!response.ok) throw new Error('Failed to fetch courts');
+      return await response.json();
     } catch (error) {
       console.error('Error fetching courts:', error);
       throw error;
@@ -148,6 +148,51 @@ export const userService = {
       return await response.json();
     } catch (error) {
       console.error('Error fetching announcements:', error);
+      throw error;
+    }
+  },
+
+  // Booking Services
+  createBooking: async (bookingData) => {
+    try {
+      const response = await fetch(`${BASE_URL}/bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData)
+      });
+      if (!response.ok) throw new Error('Failed to create booking');
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      throw error;
+    }
+  },
+
+  getPendingBookings: async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/bookings/pending`);
+      if (!response.ok) throw new Error('Failed to fetch pending bookings');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching pending bookings:', error);
+      throw error;
+    }
+  },
+
+  approveBooking: async (bookingId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/bookings/${bookingId}/approve`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!response.ok) throw new Error('Failed to approve booking');
+      return await response.json();
+    } catch (error) {
+      console.error('Error approving booking:', error);
       throw error;
     }
   }

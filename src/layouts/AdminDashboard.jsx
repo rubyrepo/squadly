@@ -5,6 +5,7 @@ import { userService } from '../services/userService';
 import AnnouncementForm from '../components/AnnouncementForm';
 import CouponForm from '../components/CouponForm';
 import CourtForm from '../components/CourtForm';
+import PendingBookings from '../components/PendingBookings';
 import Swal from 'sweetalert2';
 
 const AdminDashboard = () => {
@@ -18,11 +19,13 @@ const AdminDashboard = () => {
   const [courts, setCourts] = useState([]);
   const [showCourtForm, setShowCourtForm] = useState(false);
   const [selectedCourt, setSelectedCourt] = useState(null);
+  const [pendingBookings, setPendingBookings] = useState([]);
 
   useEffect(() => {
     fetchAnnouncements();
     fetchCoupons();
     fetchCourts();
+    fetchPendingBookings();
   }, []);
 
   const fetchAnnouncements = async () => {
@@ -49,6 +52,15 @@ const AdminDashboard = () => {
       setCourts(data);
     } catch (error) {
       Swal.fire('Error', 'Failed to fetch courts', 'error');
+    }
+  };
+
+  const fetchPendingBookings = async () => {
+    try {
+      const data = await userService.getPendingBookings();
+      setPendingBookings(data);
+    } catch (error) {
+      Swal.fire('Error', 'Failed to fetch pending bookings', 'error');
     }
   };
 
@@ -165,6 +177,16 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       Swal.fire('Error', 'Failed to delete court', 'error');
+    }
+  };
+
+  const handleApproveBooking = async (bookingId) => {
+    try {
+      await userService.approveBooking(bookingId);
+      await fetchPendingBookings();
+      Swal.fire('Success', 'Booking approved successfully', 'success');
+    } catch (error) {
+      Swal.fire('Error', 'Failed to approve booking', 'error');
     }
   };
 
@@ -381,6 +403,17 @@ const AdminDashboard = () => {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Pending Bookings Section */}
+        <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Pending Bookings</h2>
+          </div>
+          <PendingBookings
+            bookings={pendingBookings}
+            onApprove={handleApproveBooking}
+          />
         </div>
       </div>
     </div>
