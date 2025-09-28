@@ -15,6 +15,12 @@ const UserDashboard = () => {
               >
                 My Profile
               </Link>
+              <Link 
+                to="/dashboard/announcements" 
+                className="block px-4 py-2 rounded hover:bg-gray-100"
+              >
+                Announcements
+              </Link>
             </nav>
           </div>
         </div>

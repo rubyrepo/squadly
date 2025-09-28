@@ -11,6 +11,7 @@ import UserDashboard from "../layouts/UserDashboard";
 import AdminDashboard from "../layouts/AdminDashboard";
 import Profile from "../pages/Profile";
 import Courts from "../pages/Courts";
+import Announcements from '../components/Announcements';
 
 
 export const router = createBrowserRouter([
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
           {
             path: "profile",
             element: <Profile />
+          },
+          {
+            path: "announcements",
+            element: <Announcements />
           }
         ]
       },

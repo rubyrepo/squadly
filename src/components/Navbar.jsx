@@ -82,12 +82,7 @@ const Navbar = () => {
   const navLinks = [
     { to: "/", label: "Home" },
     { to: "/courts", label: "Courts" },
-    ...(user
-      ? [
-          { to: "/club", label: "Club" },
-          { to: "/activities", label: "Activities" },
-        ]
-      : []),
+    // Removed Club and Activities links
   ];
 
   return (
