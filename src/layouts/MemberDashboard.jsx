@@ -1,32 +1,35 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router';
+import { useAuth } from '../context/AuthContext';
 
-const UserDashboard = () => {
+const MemberDashboard = () => {
+  const { user } = useAuth();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Sidebar Navigation */}
         <div className="md:col-span-1">
           <div className="bg-white rounded-lg shadow p-4">
-            <h2 className="text-xl font-semibold mb-4">Dashboard</h2>
+            <h2 className="text-xl font-semibold mb-4">Member Dashboard</h2>
             <nav className="space-y-2">
               <Link 
-                to="/dashboard/profile" 
+                to="/member/profile" 
                 className="block px-4 py-2 rounded hover:bg-gray-100"
               >
                 My Profile
               </Link>
               <Link 
-                to="/dashboard/announcements" 
-                className="block px-4 py-2 rounded hover:bg-gray-100"
-              >
-                Announcements
-              </Link>
-              <Link 
-                to="/dashboard/pending-bookings" 
+                to="/member/pending-bookings" 
                 className="block px-4 py-2 rounded hover:bg-gray-100"
               >
                 Pending Bookings
+              </Link>
+              <Link 
+                to="/member/approved-bookings" 
+                className="block px-4 py-2 rounded hover:bg-gray-100"
+              >
+                Approved Bookings
               </Link>
             </nav>
           </div>
@@ -43,4 +46,4 @@ const UserDashboard = () => {
   );
 };
 
-export default UserDashboard;
+export default MemberDashboard;

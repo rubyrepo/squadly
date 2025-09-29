@@ -12,6 +12,10 @@ import AdminDashboard from "../layouts/AdminDashboard";
 import Profile from "../pages/Profile";
 import Courts from "../pages/Courts";
 import Announcements from '../components/Announcements';
+import MemberDashboard from '../layouts/MemberDashboard';
+import MemberProfile from '../components/MemberProfile';
+import MemberPendingBookings from '../components/MemberPendingBookings';
+import PendingBookings from '../components/PendingBookings';
 
 
 export const router = createBrowserRouter([
@@ -47,6 +51,10 @@ export const router = createBrowserRouter([
           {
             path: "announcements",
             element: <Announcements />
+          },
+          {
+            path: "pending-bookings",
+            element: <PendingBookings />
           }
         ]
       },
@@ -61,6 +69,20 @@ export const router = createBrowserRouter([
       {
         path: "courts",
         element: <Courts />
+      },
+      {
+        path: "member",
+        element: <PrivateRoute><MemberDashboard /></PrivateRoute>,
+        children: [
+          {
+            path: "profile",
+            element: <MemberProfile />
+          },
+          {
+            path: "pending-bookings",
+            element: <MemberPendingBookings />
+          }
+        ]
       }
     ]
   }

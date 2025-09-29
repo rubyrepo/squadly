@@ -60,6 +60,7 @@ const AdminDashboard = () => {
       const data = await userService.getPendingBookings();
       setPendingBookings(data);
     } catch (error) {
+      console.error('Error fetching pending bookings:', error);
       Swal.fire('Error', 'Failed to fetch pending bookings', 'error');
     }
   };
@@ -182,10 +183,23 @@ const AdminDashboard = () => {
 
   const handleApproveBooking = async (bookingId) => {
     try {
-      await userService.approveBooking(bookingId);
-      await fetchPendingBookings();
-      Swal.fire('Success', 'Booking approved successfully', 'success');
+      const result = await Swal.fire({
+        title: 'Confirm Approval',
+        text: 'Are you sure you want to approve this booking?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, approve it!'
+      });
+
+      if (result.isConfirmed) {
+        await userService.approveBooking(bookingId);
+        await fetchPendingBookings(); // Refresh the list
+        Swal.fire('Success', 'Booking has been approved', 'success');
+      }
     } catch (error) {
+      console.error('Error approving booking:', error);
       Swal.fire('Error', 'Failed to approve booking', 'error');
     }
   };
@@ -410,10 +424,38 @@ const AdminDashboard = () => {
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Pending Bookings</h2>
           </div>
-          <PendingBookings
-            bookings={pendingBookings}
-            onApprove={handleApproveBooking}
-          />
+          
+          {pendingBookings.length === 0 ? (
+            <p className="text-gray-600">No pending bookings available.</p>
+          ) : (
+            <div className="space-y-4">
+              {pendingBookings.map((booking) => (
+                <div key={booking._id} className="border p-4 rounded-lg">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-semibold">{booking.courtType} Court</h3>
+                      <p className="text-gray-600">User: {booking.userEmail}</p>
+                      <p className="text-gray-600">
+                        Date: {new Date(booking.date).toLocaleDateString()}
+                      </p>
+                      <p className="text-gray-600">
+                        Time Slots: {booking.slots.join(', ')}
+                      </p>
+                      <p className="text-gray-600">
+                        Total Price: ${booking.totalPrice}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleApproveBooking(booking._id)}
+                      className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
+                    >
+                      Approve
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

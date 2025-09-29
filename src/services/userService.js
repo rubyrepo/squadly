@@ -173,7 +173,9 @@ export const userService = {
   getPendingBookings: async () => {
     try {
       const response = await fetch(`${BASE_URL}/bookings/pending`);
-      if (!response.ok) throw new Error('Failed to fetch pending bookings');
+      if (!response.ok) {
+        throw new Error('Failed to fetch pending bookings');
+      }
       return await response.json();
     } catch (error) {
       console.error('Error fetching pending bookings:', error);
@@ -186,13 +188,63 @@ export const userService = {
       const response = await fetch(`${BASE_URL}/bookings/${bookingId}/approve`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         }
       });
-      if (!response.ok) throw new Error('Failed to approve booking');
+      if (!response.ok) {
+        throw new Error('Failed to approve booking');
+      }
       return await response.json();
     } catch (error) {
       console.error('Error approving booking:', error);
+      throw error;
+    }
+  },
+
+  // User Services
+  getUserData: async (email) => {
+    try {
+      const response = await fetch(`${BASE_URL}/users/${email}`);
+      if (!response.ok) throw new Error('Failed to fetch user data');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw error;
+    }
+  },
+
+  getUserPendingBookings: async (email) => {
+    try {
+      const response = await fetch(`${BASE_URL}/bookings/pending/${email}`);
+      if (!response.ok) throw new Error('Failed to fetch pending bookings');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching pending bookings:', error);
+      throw error;
+    }
+  },
+
+  cancelBooking: async (bookingId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/bookings/${bookingId}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Failed to cancel booking');
+      return await response.json();
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+      throw error;
+    }
+  },
+
+  checkMemberStatus: async (email) => {
+    try {
+      const response = await fetch(`${BASE_URL}/bookings/approved/${email}`);
+      if (!response.ok) throw new Error('Failed to check member status');
+      const approvedBookings = await response.json();
+      return approvedBookings.length > 0;
+    } catch (error) {
+      console.error('Error checking member status:', error);
       throw error;
     }
   }

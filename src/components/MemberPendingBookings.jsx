@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { userService } from '../services/userService';
 import Swal from 'sweetalert2';
 
-const PendingBookings = () => {
+const MemberPendingBookings = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,6 @@ const PendingBookings = () => {
       setBookings(data);
     } catch (error) {
       console.error('Error fetching bookings:', error);
-      Swal.fire('Error', 'Failed to fetch bookings', 'error');
     } finally {
       setLoading(false);
     }
@@ -48,41 +47,30 @@ const PendingBookings = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-48">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-      </div>
-    );
+    return <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />;
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">My Pending Bookings</h2>
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold">Pending Bookings</h2>
       {bookings.length === 0 ? (
-        <p className="text-gray-600">You have no pending bookings.</p>
+        <p className="text-gray-600">No pending bookings found.</p>
       ) : (
         <div className="space-y-4">
           {bookings.map((booking) => (
-            <div key={booking._id} className="border p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start">
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">{booking.courtType} Court</h3>
-                  <p className="text-gray-600">
-                    <span className="font-medium">Date:</span> {new Date(booking.date).toLocaleDateString()}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-medium">Time Slots:</span> {booking.slots.join(', ')}
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-medium">Total Price:</span> ${booking.totalPrice}
-                  </p>
-                  <p className="text-yellow-600">Status: Pending Approval</p>
+            <div key={booking._id} className="border p-4 rounded-lg">
+              <div className="flex justify-between">
+                <div>
+                  <h3 className="font-semibold">{booking.courtType} Court</h3>
+                  <p className="text-gray-600">Date: {new Date(booking.date).toLocaleDateString()}</p>
+                  <p className="text-gray-600">Time Slots: {booking.slots.join(', ')}</p>
+                  <p className="text-gray-600">Price: ${booking.totalPrice}</p>
                 </div>
                 <button
                   onClick={() => handleCancel(booking._id)}
-                  className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors"
+                  className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
                 >
-                  Cancel Booking
+                  Cancel
                 </button>
               </div>
             </div>
@@ -93,4 +81,4 @@ const PendingBookings = () => {
   );
 };
 
-export default PendingBookings;
+export default MemberPendingBookings;
