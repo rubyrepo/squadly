@@ -21,6 +21,10 @@ import ManageBookings from '../components/admin/ManageBookings';
 import ManageCourts from '../components/admin/ManageCourts';
 import ManageCoupons from '../components/admin/ManageCoupons';
 import ManageAnnouncements from '../components/admin/ManageAnnouncements';
+import ManageMembers from '../components/admin/ManageMembers';
+import AllUsers from '../components/admin/AllUsers';
+import ApprovedBookings from '../components/member/ApprovedBookings';
+import Payment from '../components/member/Payment';
 
 
 export const router = createBrowserRouter([
@@ -90,6 +94,14 @@ export const router = createBrowserRouter([
           {
             path: "announcements",
             element: <ManageAnnouncements />
+          },
+          {
+            path: "members",
+            element: <ManageMembers />
+          },
+          {
+            path: "users",
+            element: <AllUsers />
           }
         ]
       },
@@ -108,6 +120,14 @@ export const router = createBrowserRouter([
           {
             path: "pending-bookings",
             element: <MemberPendingBookings />
+          },
+          {
+            path: "approved-bookings",
+            element: <ApprovedBookings />
+          },
+          {
+            path: "payment",
+            element: <Payment />
           }
         ]
       }

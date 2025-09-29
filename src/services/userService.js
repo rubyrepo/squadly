@@ -24,8 +24,7 @@ export const userService = {
   getCoupons: async () => {
     try {
       const response = await fetch(`${BASE_URL}/coupons`);
-      const data = await response.json();
-      return data;
+      return await response.json();
     } catch (error) {
       console.error('Error fetching coupons:', error);
       throw error;
@@ -41,8 +40,7 @@ export const userService = {
         },
         body: JSON.stringify(couponData)
       });
-      const data = await response.json();
-      return data;
+      return await response.json();
     } catch (error) {
       console.error('Error creating coupon:', error);
       throw error;
@@ -58,8 +56,7 @@ export const userService = {
         },
         body: JSON.stringify(couponData)
       });
-      const data = await response.json();
-      return data;
+      return await response.json();
     } catch (error) {
       console.error('Error updating coupon:', error);
       throw error;
@@ -71,8 +68,7 @@ export const userService = {
       const response = await fetch(`${BASE_URL}/coupons/${id}`, {
         method: 'DELETE'
       });
-      const data = await response.json();
-      return data;
+      return await response.json();
     } catch (error) {
       console.error('Error deleting coupon:', error);
       throw error;
@@ -100,8 +96,7 @@ export const userService = {
         },
         body: JSON.stringify(courtData)
       });
-      const data = await response.json();
-      return data;
+      return await response.json();
     } catch (error) {
       console.error('Error creating court:', error);
       throw error;
@@ -117,8 +112,7 @@ export const userService = {
         },
         body: JSON.stringify(courtData)
       });
-      const data = await response.json();
-      return data;
+      return await response.json();
     } catch (error) {
       console.error('Error updating court:', error);
       throw error;
@@ -130,8 +124,7 @@ export const userService = {
       const response = await fetch(`${BASE_URL}/courts/${id}`, {
         method: 'DELETE'
       });
-      const data = await response.json();
-      return data;
+      return await response.json();
     } catch (error) {
       console.error('Error deleting court:', error);
       throw error;
@@ -218,9 +211,7 @@ export const userService = {
   getPendingBookings: async () => {
     try {
       const response = await fetch(`${BASE_URL}/bookings/pending`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch pending bookings');
-      }
+      if (!response.ok) throw new Error('Failed to fetch pending bookings');
       return await response.json();
     } catch (error) {
       console.error('Error fetching pending bookings:', error);
@@ -232,13 +223,9 @@ export const userService = {
     try {
       const response = await fetch(`${BASE_URL}/bookings/${bookingId}/approve`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
       });
-      if (!response.ok) {
-        throw new Error('Failed to approve booking');
-      }
+      if (!response.ok) throw new Error('Failed to approve booking');
       return await response.json();
     } catch (error) {
       console.error('Error approving booking:', error);
@@ -250,13 +237,9 @@ export const userService = {
     try {
       const response = await fetch(`${BASE_URL}/bookings/${bookingId}/reject`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
       });
-      if (!response.ok) {
-        throw new Error('Failed to reject booking');
-      }
+      if (!response.ok) throw new Error('Failed to reject booking');
       return await response.json();
     } catch (error) {
       console.error('Error rejecting booking:', error);
@@ -302,10 +285,10 @@ export const userService = {
 
   checkMemberStatus: async (email) => {
     try {
-      const response = await fetch(`${BASE_URL}/bookings/approved/${email}`);
+      const response = await fetch(`${BASE_URL}/members/check/${email}`);
       if (!response.ok) throw new Error('Failed to check member status');
-      const approvedBookings = await response.json();
-      return approvedBookings.length > 0;
+      const data = await response.json();
+      return data.isMember;
     } catch (error) {
       console.error('Error checking member status:', error);
       throw error;
@@ -319,6 +302,79 @@ export const userService = {
       return await response.json();
     } catch (error) {
       console.error('Error fetching admin stats:', error);
+      throw error;
+    }
+  },
+
+  getMembers: async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/members`);
+      if (!response.ok) throw new Error('Failed to fetch members');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching members:', error);
+      throw error;
+    }
+  },
+
+  deleteMember: async (email) => {
+    try {
+      const response = await fetch(`${BASE_URL}/members/${email}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Failed to delete member');
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting member:', error);
+      throw error;
+    }
+  },
+
+  getAllUsers: async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/users`);
+      if (!response.ok) throw new Error('Failed to fetch users');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw error;
+    }
+  },
+
+  // --- New Methods ---
+  getApprovedBookings: async (email) => {
+    try {
+      const response = await fetch(`${BASE_URL}/bookings/approved/${email}`);
+      if (!response.ok) throw new Error('Failed to fetch approved bookings');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching approved bookings:', error);
+      throw error;
+    }
+  },
+
+  validateCoupon: async (code) => {
+    try {
+      const response = await fetch(`${BASE_URL}/coupons/validate/${code}`);
+      if (!response.ok) throw new Error('Failed to validate coupon');
+      return await response.json();
+    } catch (error) {
+      console.error('Error validating coupon:', error);
+      throw error;
+    }
+  },
+
+  processPayment: async (paymentData) => {
+    try {
+      const response = await fetch(`${BASE_URL}/payments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(paymentData)
+      });
+      if (!response.ok) throw new Error('Failed to process payment');
+      return await response.json();
+    } catch (error) {
+      console.error('Error processing payment:', error);
       throw error;
     }
   }
