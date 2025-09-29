@@ -16,6 +16,11 @@ import MemberDashboard from '../layouts/MemberDashboard';
 import MemberProfile from '../components/MemberProfile';
 import MemberPendingBookings from '../components/MemberPendingBookings';
 import PendingBookings from '../components/PendingBookings';
+import AdminProfile from '../components/admin/AdminProfile';
+import ManageBookings from '../components/admin/ManageBookings';
+import ManageCourts from '../components/admin/ManageCourts';
+import ManageCoupons from '../components/admin/ManageCoupons';
+import ManageAnnouncements from '../components/admin/ManageAnnouncements';
 
 
 export const router = createBrowserRouter([
@@ -65,6 +70,28 @@ export const router = createBrowserRouter([
             <AdminDashboard />
           </AdminRoute>
         ),
+        children: [
+          {
+            path: "profile",
+            element: <AdminProfile />
+          },
+          {
+            path: "bookings",
+            element: <ManageBookings />
+          },
+          {
+            path: "courts",
+            element: <ManageCourts />
+          },
+          {
+            path: "coupons",
+            element: <ManageCoupons />
+          },
+          {
+            path: "announcements",
+            element: <ManageAnnouncements />
+          }
+        ]
       },
       {
         path: "courts",

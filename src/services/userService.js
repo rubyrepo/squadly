@@ -142,12 +142,57 @@ export const userService = {
   getAnnouncements: async () => {
     try {
       const response = await fetch(`${BASE_URL}/announcements`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch announcements');
-      }
+      if (!response.ok) throw new Error('Failed to fetch announcements');
       return await response.json();
     } catch (error) {
       console.error('Error fetching announcements:', error);
+      throw error;
+    }
+  },
+
+  createAnnouncement: async (announcementData) => {
+    try {
+      const response = await fetch(`${BASE_URL}/announcements`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(announcementData)
+      });
+      if (!response.ok) throw new Error('Failed to create announcement');
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating announcement:', error);
+      throw error;
+    }
+  },
+
+  deleteAnnouncement: async (id) => {
+    try {
+      const response = await fetch(`${BASE_URL}/announcements/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Failed to delete announcement');
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting announcement:', error);
+      throw error;
+    }
+  },
+
+  updateAnnouncement: async (id, announcementData) => {
+    try {
+      const response = await fetch(`${BASE_URL}/announcements/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(announcementData)
+      });
+      if (!response.ok) throw new Error('Failed to update announcement');
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating announcement:', error);
       throw error;
     }
   },
@@ -201,6 +246,24 @@ export const userService = {
     }
   },
 
+  rejectBooking: async (bookingId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/bookings/${bookingId}/reject`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to reject booking');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error rejecting booking:', error);
+      throw error;
+    }
+  },
+
   // User Services
   getUserData: async (email) => {
     try {
@@ -245,6 +308,17 @@ export const userService = {
       return approvedBookings.length > 0;
     } catch (error) {
       console.error('Error checking member status:', error);
+      throw error;
+    }
+  },
+
+  getAdminStats: async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/admin/stats`);
+      if (!response.ok) throw new Error('Failed to fetch admin stats');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching admin stats:', error);
       throw error;
     }
   }
