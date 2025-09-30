@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router";
+import { NavLink, Link } from "react-router";
 import { useAuth } from "../context/AuthContext";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut, LayoutDashboard, Settings } from "lucide-react";
 
 const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
@@ -22,55 +22,64 @@ const Navbar = () => {
   }, []);
 
   const UserProfile = () => (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center">
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="focus:outline-none"
+          className="p-1 rounded-full transition duration-150 ease-in-out hover:ring-2 hover:ring-red-500 hover:ring-offset-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
         >
           {user?.photoURL && !imgError ? (
             <img
               src={user.photoURL}
               alt={user.username}
-              className="w-9 h-9 rounded-full object-cover"
+              className="w-10 h-10 rounded-full object-cover shadow-md"
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="flex items-center justify-center w-9 h-9 rounded-full bg-red-600 text-white font-semibold">
-              {user?.username?.[0]?.toUpperCase() || "U"}
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-600 text-white font-bold text-lg shadow-md">
+              {user?.username?.[0]?.toUpperCase() || <User className="w-5 h-5" />}
             </div>
           )}
         </button>
 
-        {/* Dropdown Menu */}
+        {/* Dropdown Menu with animation */}
         {isDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-            <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
-              {user?.username || user?.email}
+          <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-100 rounded-xl shadow-2xl py-2 z-50 transform transition duration-200 origin-top-right animate-in fade-in zoom-in-95">
+            <div className="px-4 py-3 text-sm text-gray-700 border-b border-gray-100">
+              <p className="font-semibold truncate">{user?.username || "User"}</p>
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
-            <Link
+
+            <NavLink
               to="/dashboard"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 transition-colors"
               onClick={() => setIsDropdownOpen(false)}
             >
+              <LayoutDashboard className="w-4 h-4 text-red-600" />
               Dashboard
-            </Link>
+            </NavLink>
+
             {isAdmin && (
-              <Link
+              <NavLink
                 to="/admin"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 transition-colors"
                 onClick={() => setIsDropdownOpen(false)}
               >
-                Admin Dashboard
-              </Link>
+                <Settings className="w-4 h-4 text-red-600" />
+                Admin Panel
+              </NavLink>
             )}
+
+            <div className="border-t border-gray-100 my-1"></div>
+
             <button
               onClick={() => {
                 logout();
                 setIsDropdownOpen(false);
               }}
-              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+              className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
             >
+              <LogOut className="w-4 h-4" />
               Logout
             </button>
           </div>
@@ -82,33 +91,42 @@ const Navbar = () => {
   const navLinks = [
     { to: "/", label: "Home" },
     { to: "/courts", label: "Courts" },
-    // Removed Club and Activities links
   ];
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
+    <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl">
+          <Link
+            to="/"
+            className="flex items-center gap-2 font-extrabold text-2xl tracking-tight"
+          >
             <img
               src="/icons8-track-and-field-96.png"
               alt="logo"
-              className="h-8 w-8"
+              className="h-9 w-9"
             />
-            <span className="text-gray-800">Squadly</span>
+            <span className="text-gray-900">Squadly</span>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex gap-6">
+          <div className="hidden md:flex gap-8 items-center">
             {navLinks.map((link) => (
-              <Link
+              <NavLink
                 key={link.to}
                 to={link.to}
-                className="text-gray-600 hover:text-red-600 transition-colors"
+                className={({ isActive }) =>
+                  `text-gray-700 text-base font-medium relative group transition-colors duration-200 ${
+                    isActive
+                      ? "text-red-600"
+                      : "hover:text-red-600"
+                  }`
+                }
               >
                 {link.label}
-              </Link>
+                <span className="absolute left-0 bottom-0 h-0.5 bg-red-600 w-0 group-hover:w-full transition-all duration-300"></span>
+              </NavLink>
             ))}
           </div>
 
@@ -118,25 +136,29 @@ const Navbar = () => {
               <UserProfile />
             ) : (
               <>
-                <Link
+                <NavLink
                   to="/login"
-                  className="text-gray-600 hover:text-red-600 transition-colors"
+                  className={({ isActive }) =>
+                    `text-gray-700 hover:text-red-600 font-medium transition-colors ${
+                      isActive ? "text-red-600" : ""
+                    }`
+                  }
                 >
-                  Login
-                </Link>
-                <Link
+                  Log In
+                </NavLink>
+                <NavLink
                   to="/register"
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  className="bg-red-600 text-white px-5 py-2.5 rounded-full text-base font-bold shadow-lg shadow-red-300/60 hover:bg-red-700 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-red-300/80"
                 >
-                  Register
-                </Link>
+                  Sign Up
+                </NavLink>
               </>
             )}
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+            className="md:hidden p-2 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -146,38 +168,46 @@ const Navbar = () => {
 
       {/* Mobile Nav */}
       {isOpen && (
-        <div className="md:hidden px-4 pb-4 space-y-3 bg-white shadow-sm">
+        <div className="md:hidden px-4 pb-4 space-y-3 bg-white border-t border-gray-100 shadow-xl transition-all duration-300 ease-in-out origin-top animate-in slide-in-from-top-2">
           {navLinks.map((link) => (
-            <Link
+            <NavLink
               key={link.to}
               to={link.to}
               onClick={() => setIsOpen(false)}
-              className="block text-gray-600 hover:text-red-600 transition-colors"
+              className={({ isActive }) =>
+                `block px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition-colors ${
+                  isActive ? "border-l-4 border-red-600 pl-2" : ""
+                }`
+              }
             >
               {link.label}
-            </Link>
+            </NavLink>
           ))}
 
           {user ? (
-            <div className="flex items-center gap-4 pt-2 border-t border-gray-200">
+            <div className="pt-4 border-t border-gray-200 space-y-2">
               <UserProfile />
             </div>
           ) : (
-            <div className="flex gap-4 pt-2 border-t border-gray-200">
-              <Link
+            <div className="flex flex-col gap-3 pt-4 border-t border-gray-200">
+              <NavLink
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="text-gray-600 hover:text-red-600 transition-colors"
+                className={({ isActive }) =>
+                  `text-gray-700 hover:text-red-600 font-medium text-center py-2 transition-colors ${
+                    isActive ? "text-red-600" : ""
+                  }`
+                }
               >
-                Login
-              </Link>
-              <Link
+                Log In
+              </NavLink>
+              <NavLink
                 to="/register"
                 onClick={() => setIsOpen(false)}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                className="bg-red-600 text-white px-5 py-2.5 rounded-full text-base font-bold shadow-lg shadow-red-300/60 hover:bg-red-700 transition-all duration-200 focus:outline-none"
               >
-                Register
-              </Link>
+                Sign Up
+              </NavLink>
             </div>
           )}
         </div>

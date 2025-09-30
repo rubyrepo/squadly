@@ -1,10 +1,18 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router"; // Fixed import
-import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { Link, useNavigate } from "react-router";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider
+} from "firebase/auth";
 import { auth } from "../config/firebase.config";
 import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
 import { userService } from '../services/userService';
+import { User, Mail, Lock, Image } from "lucide-react";
+import { FcGoogle } from 'react-icons/fc'; // For colored Google icon
+// import { FaGoogle } from 'react-icons/fa'; // For single-color Google icon
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -27,32 +35,23 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (name === "password") {
-      setPasswordError(validatePassword(value));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === "password") setPasswordError(validatePassword(value));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (passwordError) return;
     setLoading(true);
 
     try {
-      // First create Firebase auth user
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
-      // Update Firebase profile
       await updateProfile(userCredential.user, {
         displayName: formData.name,
         photoURL: formData.photoURL || null
       });
 
-      // Prepare user data for MongoDB
       const userData = {
         uid: userCredential.user.uid,
         email: formData.email,
@@ -63,10 +62,8 @@ const Register = () => {
         provider: 'email'
       };
 
-      // Save user data to MongoDB
       await userService.register(userData);
 
-      // Login the user
       login({
         username: formData.name,
         email: formData.email,
@@ -82,9 +79,8 @@ const Register = () => {
       });
 
       navigate('/');
-
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error(error);
       await Swal.fire({
         icon: 'error',
         title: 'Registration Failed',
@@ -98,12 +94,10 @@ const Register = () => {
   const handleGoogleRegister = async () => {
     setLoading(true);
     const googleProvider = new GoogleAuthProvider();
-
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      // Prepare user data for MongoDB
       const userData = {
         uid: user.uid,
         email: user.email,
@@ -114,15 +108,13 @@ const Register = () => {
         provider: 'google'
       };
 
-      // Save Google user data to MongoDB
-      const dbResponse = await userService.register(userData);
+      await userService.register(userData);
 
-      // Login the user regardless of whether they're new or existing
       login({
         username: user.displayName || user.email.split("@")[0],
         email: user.email,
         uid: user.uid,
-        photoURL: user.photoURL,
+        photoURL: user.photoURL
       });
 
       await Swal.fire({
@@ -133,9 +125,8 @@ const Register = () => {
       });
 
       navigate("/");
-
     } catch (error) {
-      console.error('Google registration error:', error);
+      console.error(error);
       await Swal.fire({
         icon: "error",
         title: "Registration Failed",
@@ -148,13 +139,13 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white shadow-2xl rounded-lg p-8">
+      <div className="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8">
         <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
-          <div className="flex flex-col">
-            <label className="mb-1 font-medium text-gray-700">Name</label>
+          <div className="flex items-center border border-gray-300 rounded px-3 py-2 focus-within:ring-2 focus-within:ring-red-500">
+            <User className="w-5 h-5 text-gray-400 mr-2" />
             <input
               type="text"
               name="name"
@@ -162,13 +153,12 @@ const Register = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="flex-1 outline-none"
             />
           </div>
 
-
-          <div className="flex flex-col">
-            <label className="mb-1 font-medium text-gray-700">Email</label>
+          <div className="flex items-center border border-gray-300 rounded px-3 py-2 focus-within:ring-2 focus-within:ring-red-500">
+            <Mail className="w-5 h-5 text-gray-400 mr-2" />
             <input
               type="email"
               name="email"
@@ -176,26 +166,24 @@ const Register = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="flex-1 outline-none"
             />
           </div>
 
-
-          <div className="flex flex-col">
-            <label className="mb-1 font-medium text-gray-700">Photo URL (optional)</label>
+          <div className="flex items-center border border-gray-300 rounded px-3 py-2 focus-within:ring-2 focus-within:ring-red-500">
+            <Image className="w-5 h-5 text-gray-400 mr-2" />
             <input
               type="url"
               name="photoURL"
-              placeholder="Photo URL"
+              placeholder="Photo URL (optional)"
               value={formData.photoURL}
               onChange={handleChange}
-              className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="flex-1 outline-none"
             />
           </div>
 
-
-          <div className="flex flex-col">
-            <label className="mb-1 font-medium text-gray-700">Password</label>
+          <div className="flex items-center border rounded px-3 py-2 focus-within:ring-2 focus-within:ring-red-500 border-gray-300">
+            <Lock className="w-5 h-5 text-gray-400 mr-2" />
             <input
               type="password"
               name="password"
@@ -203,26 +191,23 @@ const Register = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className={`px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500 ${passwordError ? "border-red-500" : "border-gray-300"
-                }`}
+              className="flex-1 outline-none"
             />
-            {passwordError && <span className="text-red-500 text-sm mt-1">{passwordError}</span>}
           </div>
-
+          {passwordError && <span className="text-red-500 text-sm mt-1">{passwordError}</span>}
 
           <button
             type="submit"
             disabled={loading || !!passwordError}
-            className="w-full px-4 py-2 bg-red-600 text-white font-medium rounded hover:bg-red-700 transition"
+            className="w-full px-4 py-2 bg-red-600 text-white font-medium rounded hover:bg-red-700 transition flex justify-center items-center"
           >
             {loading ? (
-              <div className="animate-spin border-4 border-white border-t-transparent h-5 w-5 mx-auto rounded-full"></div>
+              <div className="animate-spin border-4 border-white border-t-transparent h-5 w-5 rounded-full"></div>
             ) : (
               "Register"
             )}
           </button>
         </form>
-
 
         <div className="my-4 flex items-center">
           <hr className="flex-1 border-gray-300" />
@@ -230,11 +215,11 @@ const Register = () => {
           <hr className="flex-1 border-gray-300" />
         </div>
 
-
         <button
           onClick={handleGoogleRegister}
-          className="w-full px-4 py-2 border border-gray-300 rounded flex items-center justify-center gap-2 hover:bg-gray-100 transition"
+          className="w-full px-4 py-2 border border-gray-300 rounded flex items-center justify-center gap-2 hover:bg-gray-100 transition font-medium"
         >
+          <FcGoogle className="w-5 h-5" />
           Continue with Google
         </button>
 

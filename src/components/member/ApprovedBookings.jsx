@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
 import { userService } from '../../services/userService';
@@ -10,11 +10,10 @@ const ApprovedBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchApprovedBookings();
-  }, [user]);
+  const fetchApprovedBookings = useCallback(async () => {
+    if (!user?.email) return;
 
-  const fetchApprovedBookings = async () => {
+    setLoading(true);
     try {
       const data = await userService.getApprovedBookings(user.email);
       setBookings(data);
@@ -23,7 +22,11 @@ const ApprovedBookings = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.email]);
+
+  useEffect(() => {
+    fetchApprovedBookings();
+  }, [fetchApprovedBookings]);
 
   const handleCancel = async (bookingId) => {
     try {
@@ -62,6 +65,7 @@ const ApprovedBookings = () => {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Approved Bookings</h2>
+
       {bookings.length === 0 ? (
         <p className="text-gray-600">No approved bookings found.</p>
       ) : (
@@ -81,7 +85,8 @@ const ApprovedBookings = () => {
                     Price: ${booking.totalPrice}
                   </p>
                 </div>
-                <div className="space-x-2">
+
+                <div className="space-x-2 flex flex-col md:flex-row">
                   <button
                     onClick={() => handlePayment(booking)}
                     className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"

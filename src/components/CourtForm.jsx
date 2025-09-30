@@ -7,11 +7,11 @@ import {
   Pencil,
   X,
   DollarSign,
-  Sword, // A general sports icon
-  Building, // A general facility icon
+  Sword,
+  Building,
 } from 'lucide-react';
+import Swal from 'sweetalert2';
 
-// Map facility types. We are no longer trying to render icons inside the <option> tag.
 const facilityOptions = [
   { value: 'Tennis', label: 'Tennis Court' },
   { value: 'Badminton', label: 'Badminton Court' },
@@ -32,10 +32,7 @@ const CourtForm = ({ court, onSubmit, onCancel }) => {
     imageUrl: '',
   });
 
-  const [newSlot, setNewSlot] = useState({
-    start: '',
-    end: ''
-  });
+  const [newSlot, setNewSlot] = useState({ start: '', end: '' });
 
   useEffect(() => {
     if (court) {
@@ -50,31 +47,32 @@ const CourtForm = ({ court, onSubmit, onCancel }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSlotChange = (e) => {
     const { name, value } = e.target;
-    setNewSlot(prev => ({ ...prev, [name]: value }));
+    setNewSlot((prev) => ({ ...prev, [name]: value }));
   };
 
   const addTimeSlot = () => {
     if (newSlot.start && newSlot.end && newSlot.start < newSlot.end) {
       const timeSlot = `${newSlot.start} - ${newSlot.end}`;
-      setFormData(prev => ({
-        ...prev,
-        timeSlots: [...prev.timeSlots, timeSlot]
-      }));
+      setFormData((prev) => ({ ...prev, timeSlots: [...prev.timeSlots, timeSlot] }));
       setNewSlot({ start: '', end: '' });
     } else {
-      alert('Please ensure the End Time is after the Start Time.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Time Slot',
+        text: 'End time must be after start time.',
+      });
     }
   };
 
   const removeTimeSlot = (index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      timeSlots: prev.timeSlots.filter((_, i) => i !== index)
+      timeSlots: prev.timeSlots.filter((_, i) => i !== index),
     }));
   };
 
@@ -83,168 +81,141 @@ const CourtForm = ({ court, onSubmit, onCancel }) => {
     onSubmit(formData);
   };
 
-  const inputClass = "mt-1 block w-full rounded-lg border-gray-300 shadow-sm transition duration-150 ease-in-out focus:ring-red-500 focus:border-red-500 p-2 border";
-  
-  // Choose a sensible default icon for the header based on whether we are creating or editing
+  const inputClass = 'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 p-3 border transition';
   const HeaderIcon = court ? Pencil : Building;
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white shadow-2xl rounded-xl border border-gray-100">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 flex items-center">
-        <HeaderIcon className="w-6 h-6 mr-2 text-red-500" />
-        {court ? 'Edit Facility Details' : 'Create New Facility'}
+    <div className="max-w-2xl mx-auto p-8 bg-white rounded-2xl shadow-lg border border-gray-200">
+      <h2 className="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-3 border-b pb-4">
+        <HeaderIcon className="w-7 h-7 text-red-500" />
+        {court ? 'Edit Facility' : 'Add New Facility'}
       </h2>
+
       <form onSubmit={handleSubmit} className="space-y-6">
-        
-        {/* Facility Type (Icon removed from select) */}
+
+        {/* Facility Type */}
         <div>
-          <label htmlFor="type" className="block text-sm font-semibold text-gray-700 mb-1">
-            Facility Type <span className="text-red-500">*</span>
-          </label>
+          <label className="block text-gray-700 font-semibold mb-2">Facility Type <span className="text-red-500">*</span></label>
           <div className="relative">
-            <Sword className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            <Sword className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
             <select
-              id="type"
               name="type"
               value={formData.type}
               onChange={handleChange}
               required
-              className={`${inputClass} pl-10`} // Added pl-10 back for the Sword icon prefix
+              className={`${inputClass} pl-10`}
             >
-              <option value="" disabled>Select a facility type</option>
-              {facilityOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
+              <option value="" disabled>Select a facility</option>
+              {facilityOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Price Per Session */}
+        {/* Price */}
         <div>
-          <label htmlFor="pricePerSession" className="block text-sm font-semibold text-gray-700 mb-1">
-            Price Per Session (in currency) <span className="text-red-500">*</span>
-          </label>
+          <label className="block text-gray-700 font-semibold mb-2">Price Per Session ($) <span className="text-red-500">*</span></label>
           <div className="relative">
-            <DollarSign className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 w-5 h-5 mt-2" />
+            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
             <input
-              id="pricePerSession"
               type="number"
               name="pricePerSession"
               value={formData.pricePerSession}
               onChange={handleChange}
-              required
               min="0"
-              placeholder="e.g., 25.00"
+              step="0.01"
+              placeholder="25.00"
+              required
               className={`${inputClass} pl-10`}
             />
           </div>
         </div>
-        
+
         {/* Time Slots */}
-        <div className="border border-gray-200 p-4 rounded-lg bg-gray-50">
-          <label className="block text-md font-semibold text-gray-700 mb-3 flex items-center">
-            <Clock className="w-5 h-5 mr-2 text-gray-600" /> Available Time Slots
+        <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+          <label className="text-gray-700 font-semibold mb-3 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-gray-600" /> Available Time Slots
           </label>
-          
-          {/* Current Slots List */}
+
+          {formData.timeSlots.length === 0 && <p className="text-gray-400 italic mb-3">No slots added yet</p>}
           <div className="space-y-2 mb-4">
-            {formData.timeSlots.length === 0 ? (
-                <p className="text-sm text-gray-500 italic p-2">No time slots added yet.</p>
-            ) : (
-                formData.timeSlots.map((slot, index) => (
-                    <div 
-                        key={index} 
-                        className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-md shadow-sm"
-                    >
-                        <span className="text-sm font-medium text-gray-800">{slot}</span>
-                        <button
-                            type="button"
-                            onClick={() => removeTimeSlot(index)}
-                            className="text-red-500 hover:text-red-700 p-1 transition duration-150 ease-in-out rounded-full hover:bg-red-50"
-                            aria-label={`Remove slot ${slot}`}
-                        >
-                            <Trash2 className="h-4 w-4" />
-                        </button>
-                    </div>
-                ))
-            )}
+            {formData.timeSlots.map((slot, idx) => (
+              <div key={idx} className="flex justify-between items-center bg-white border border-gray-200 rounded-md p-2 shadow-sm">
+                <span className="text-gray-800 font-medium">{slot}</span>
+                <button
+                  type="button"
+                  onClick={() => removeTimeSlot(idx)}
+                  className="text-red-500 hover:text-red-700 rounded-full p-1 transition"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
           </div>
 
-          {/* Add New Slot Input */}
-          <div className="flex flex-col sm:flex-row gap-3 items-center pt-3 border-t border-gray-200">
-            <div className='flex gap-2 flex-1'>
-                <input
-                    type="time"
-                    name="start"
-                    value={newSlot.start}
-                    onChange={handleSlotChange}
-                    className={`${inputClass} flex-1`}
-                    aria-label="Slot Start Time"
-                />
-                <span className="self-center text-gray-500 font-bold text-lg">–</span>
-                <input
-                    type="time"
-                    name="end"
-                    value={newSlot.end}
-                    onChange={handleSlotChange}
-                    className={`${inputClass} flex-1`}
-                    aria-label="Slot End Time"
-                />
+          <div className="flex flex-col sm:flex-row gap-3 items-center border-t border-gray-200 pt-3">
+            <div className="flex gap-2 flex-1">
+              <input
+                type="time"
+                name="start"
+                value={newSlot.start}
+                onChange={handleSlotChange}
+                className={`${inputClass} flex-1`}
+              />
+              <span className="self-center font-bold text-gray-500 text-lg">–</span>
+              <input
+                type="time"
+                name="end"
+                value={newSlot.end}
+                onChange={handleSlotChange}
+                className={`${inputClass} flex-1`}
+              />
             </div>
             <button
               type="button"
               onClick={addTimeSlot}
               disabled={!newSlot.start || !newSlot.end}
-              className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition duration-150 ease-in-out disabled:bg-gray-400 disabled:cursor-not-allowed shadow-md flex items-center justify-center"
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              <Plus className="w-4 h-4 mr-1" /> Add Slot
+              <Plus className="w-4 h-4" /> Add Slot
             </button>
           </div>
         </div>
 
-        {/* Facility Image URL */}
+        {/* Image */}
         <div>
-          <label htmlFor="imageUrl" className="block text-sm font-semibold text-gray-700 mb-1">
-            Facility Image URL <span className="text-red-500">*</span>
-          </label>
+          <label className="block text-gray-700 font-semibold mb-2">Facility Image <span className="text-red-500">*</span></label>
           <input
-            id="imageUrl"
             type="url"
             name="imageUrl"
             value={formData.imageUrl}
             onChange={handleChange}
             required
-            placeholder="e.g., https://example.com/facility.jpg"
+            placeholder="https://example.com/image.jpg"
             className={inputClass}
           />
           {formData.imageUrl && (
-            <div className="mt-4 p-2 border border-gray-200 rounded-lg bg-gray-50">
-              <p className="text-xs text-gray-500 mb-1">Image Preview:</p>
-              <img
-                src={formData.imageUrl}
-                alt="Facility preview"
-                className="h-40 w-full object-cover rounded-md shadow-md"
-              />
+            <div className="mt-4 rounded-lg overflow-hidden shadow-md">
+              <img src={formData.imageUrl} alt="Preview" className="h-48 w-full object-cover" />
             </div>
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+        {/* Actions */}
+        <div className="flex justify-end gap-3 mt-4">
           <button
             type="button"
             onClick={onCancel}
-            className="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-150 ease-in-out shadow-sm flex items-center"
+            className="px-5 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center gap-2"
           >
-            <X className="w-4 h-4 mr-1" /> Cancel
+            <X className="w-4 h-4" /> Cancel
           </button>
           <button
             type="submit"
-            className="px-5 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 transition duration-150 ease-in-out shadow-md flex items-center"
+            className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center gap-2"
           >
-            {court ? <><Save className="w-4 h-4 mr-1" /> Save Changes</> : <><Plus className="w-4 h-4 mr-1" /> Create Facility</>}
+            {court ? <><Save className="w-4 h-4" /> Save Changes</> : <><Plus className="w-4 h-4" /> Create Facility</>}
           </button>
         </div>
       </form>

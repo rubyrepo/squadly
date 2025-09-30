@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { userService } from '../../services/userService';
+import { useAuth } from '../../context/AuthContext';
 import Swal from 'sweetalert2';
 
 const Payment = () => {
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const { booking } = location.state || {};
@@ -23,6 +25,7 @@ const Payment = () => {
         bookingId: booking._id,
         amount: discountedPrice,
         couponCode: couponCode || null,
+        userEmail: user.email,  // Add user email
         date: new Date()
       };
 
@@ -35,8 +38,7 @@ const Payment = () => {
         confirmButtonText: 'OK'
       });
 
-      // Navigate after showing success message
-      navigate('/member/approved-bookings', { replace: true });
+      navigate('/member/payment-history', { replace: true });
     } catch (error) {
       Swal.fire('Error', 'Payment failed', 'error');
     }

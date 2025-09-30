@@ -1,19 +1,15 @@
 const BASE_URL = 'http://localhost:5000';
 
 export const userService = {
+  // User registration
   register: async (userData) => {
     try {
       const response = await fetch(`${BASE_URL}/users`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
       });
-
-      const data = await response.json();
-      return data;
-      
+      return await response.json();
     } catch (error) {
       console.error('UserService register error:', error);
       throw error;
@@ -35,9 +31,7 @@ export const userService = {
     try {
       const response = await fetch(`${BASE_URL}/coupons`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(couponData)
       });
       return await response.json();
@@ -51,9 +45,7 @@ export const userService = {
     try {
       const response = await fetch(`${BASE_URL}/coupons/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(couponData)
       });
       return await response.json();
@@ -65,9 +57,7 @@ export const userService = {
 
   deleteCoupon: async (id) => {
     try {
-      const response = await fetch(`${BASE_URL}/coupons/${id}`, {
-        method: 'DELETE'
-      });
+      const response = await fetch(`${BASE_URL}/coupons/${id}`, { method: 'DELETE' });
       return await response.json();
     } catch (error) {
       console.error('Error deleting coupon:', error);
@@ -91,9 +81,7 @@ export const userService = {
     try {
       const response = await fetch(`${BASE_URL}/courts`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(courtData)
       });
       return await response.json();
@@ -107,9 +95,7 @@ export const userService = {
     try {
       const response = await fetch(`${BASE_URL}/courts/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(courtData)
       });
       return await response.json();
@@ -121,9 +107,7 @@ export const userService = {
 
   deleteCourt: async (id) => {
     try {
-      const response = await fetch(`${BASE_URL}/courts/${id}`, {
-        method: 'DELETE'
-      });
+      const response = await fetch(`${BASE_URL}/courts/${id}`, { method: 'DELETE' });
       return await response.json();
     } catch (error) {
       console.error('Error deleting court:', error);
@@ -147,9 +131,7 @@ export const userService = {
     try {
       const response = await fetch(`${BASE_URL}/announcements`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(announcementData)
       });
       if (!response.ok) throw new Error('Failed to create announcement');
@@ -160,26 +142,11 @@ export const userService = {
     }
   },
 
-  deleteAnnouncement: async (id) => {
-    try {
-      const response = await fetch(`${BASE_URL}/announcements/${id}`, {
-        method: 'DELETE'
-      });
-      if (!response.ok) throw new Error('Failed to delete announcement');
-      return await response.json();
-    } catch (error) {
-      console.error('Error deleting announcement:', error);
-      throw error;
-    }
-  },
-
   updateAnnouncement: async (id, announcementData) => {
     try {
       const response = await fetch(`${BASE_URL}/announcements/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(announcementData)
       });
       if (!response.ok) throw new Error('Failed to update announcement');
@@ -190,14 +157,23 @@ export const userService = {
     }
   },
 
+  deleteAnnouncement: async (id) => {
+    try {
+      const response = await fetch(`${BASE_URL}/announcements/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to delete announcement');
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting announcement:', error);
+      throw error;
+    }
+  },
+
   // Booking Services
   createBooking: async (bookingData) => {
     try {
       const response = await fetch(`${BASE_URL}/bookings`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookingData)
       });
       if (!response.ok) throw new Error('Failed to create booking');
@@ -272,9 +248,7 @@ export const userService = {
 
   cancelBooking: async (bookingId) => {
     try {
-      const response = await fetch(`${BASE_URL}/bookings/${bookingId}`, {
-        method: 'DELETE'
-      });
+      const response = await fetch(`${BASE_URL}/bookings/${bookingId}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to cancel booking');
       return await response.json();
     } catch (error) {
@@ -285,10 +259,10 @@ export const userService = {
 
   checkMemberStatus: async (email) => {
     try {
-      const response = await fetch(`${BASE_URL}/members/check/${email}`);
+      const response = await fetch(`${BASE_URL}/bookings/approved/${email}`);
       if (!response.ok) throw new Error('Failed to check member status');
-      const data = await response.json();
-      return data.isMember;
+      const approvedBookings = await response.json();
+      return approvedBookings.length > 0;
     } catch (error) {
       console.error('Error checking member status:', error);
       throw error;
@@ -319,9 +293,7 @@ export const userService = {
 
   deleteMember: async (email) => {
     try {
-      const response = await fetch(`${BASE_URL}/members/${email}`, {
-        method: 'DELETE'
-      });
+      const response = await fetch(`${BASE_URL}/members/${email}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to delete member');
       return await response.json();
     } catch (error) {
@@ -341,7 +313,7 @@ export const userService = {
     }
   },
 
-  // --- New Methods ---
+  // --- Additional Methods ---
   getApprovedBookings: async (email) => {
     try {
       const response = await fetch(`${BASE_URL}/bookings/approved/${email}`);
@@ -349,6 +321,20 @@ export const userService = {
       return await response.json();
     } catch (error) {
       console.error('Error fetching approved bookings:', error);
+      throw error;
+    }
+  },
+
+  getConfirmedBookings: async (email) => {
+    try {
+      const response = await fetch(`${BASE_URL}/bookings/confirmed/${email}`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to fetch confirmed bookings');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching confirmed bookings:', error);
       throw error;
     }
   },
@@ -375,6 +361,20 @@ export const userService = {
       return await response.json();
     } catch (error) {
       console.error('Error processing payment:', error);
+      throw error;
+    }
+  },
+
+  getPaymentHistory: async (email) => {
+    try {
+      const response = await fetch(`${BASE_URL}/payments/history/${email}`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to fetch payment history');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching payment history:', error);
       throw error;
     }
   }

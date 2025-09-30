@@ -10,9 +10,11 @@ const AnnouncementForm = ({ announcement, onSubmit, onCancel }) => {
   useEffect(() => {
     if (announcement) {
       setFormData({
-        title: announcement.title,
-        content: announcement.content,
-        date: announcement.date?.split('T')[0] || new Date().toISOString().split('T')[0]
+        title: announcement.title || '',
+        content: announcement.content || '',
+        date: announcement.date
+          ? new Date(announcement.date).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0]
       });
     }
   }, [announcement]);
@@ -24,6 +26,7 @@ const AnnouncementForm = ({ announcement, onSubmit, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.title.trim() || !formData.content.trim()) return;
     onSubmit(formData);
   };
 
@@ -40,6 +43,7 @@ const AnnouncementForm = ({ announcement, onSubmit, onCancel }) => {
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
         />
       </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-700">Content</label>
         <textarea
@@ -51,6 +55,7 @@ const AnnouncementForm = ({ announcement, onSubmit, onCancel }) => {
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
         />
       </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-700">Date</label>
         <input
@@ -62,6 +67,7 @@ const AnnouncementForm = ({ announcement, onSubmit, onCancel }) => {
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
         />
       </div>
+
       <div className="flex justify-end space-x-3">
         <button
           type="button"

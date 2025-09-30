@@ -25,6 +25,9 @@ import ManageMembers from '../components/admin/ManageMembers';
 import AllUsers from '../components/admin/AllUsers';
 import ApprovedBookings from '../components/member/ApprovedBookings';
 import Payment from '../components/member/Payment';
+import ConfirmedBookings from '../components/member/ConfirmedBookings';
+import PaymentHistory from '../components/member/PaymentHistory';
+import MemberAnnouncements from '../components/member/MemberAnnouncements';
 
 
 export const router = createBrowserRouter([
@@ -128,6 +131,18 @@ export const router = createBrowserRouter([
           {
             path: "payment",
             element: <Payment />
+          },
+          {
+            path: "confirmed-bookings",
+            element: <ConfirmedBookings />
+          },
+          {
+            path: "payment-history",
+            element: <PaymentHistory />
+          },
+          {
+            path: "announcements",
+            element: <MemberAnnouncements />
           }
         ]
       }
